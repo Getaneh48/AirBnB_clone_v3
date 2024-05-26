@@ -51,6 +51,28 @@ class DBStorage:
                     new_dict[key] = obj
         return (new_dict)
 
+    def get(self, cls, id):
+        """
+        returns an object with based on the given class name and id value
+        """
+        if cls is None:
+            return (None)
+        obj = self.__session.query(cls).get(id)
+        if obj:
+            return (obj)
+        else:
+            return (None)
+
+    def count(self, cls=None):
+        """
+        returns the number of objects for the given class or all objects count
+        if no class is given
+        """
+        if cls is None:
+            return (len(self.all()))
+        else:
+            return (len(self.all(cls)))
+
     def new(self, obj):
         """add the object to the current database session"""
         self.__session.add(obj)
@@ -63,6 +85,7 @@ class DBStorage:
         """delete from the current database session obj if not None"""
         if obj is not None:
             self.__session.delete(obj)
+            self.__session.commit()
 
     def reload(self):
         """reloads data from the database"""
