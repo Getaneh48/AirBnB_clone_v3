@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-Blueprint for places reviews route
+Blueprint for review model route
 """
 from api.v1.views import app_views
 from flask import jsonify, abort, request, make_response

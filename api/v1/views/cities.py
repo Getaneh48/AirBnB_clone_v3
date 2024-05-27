@@ -8,13 +8,19 @@ from models import storage
 from models.city import City
 from models.state import State
 
-@app_views.route('/states/<state_id>/cities', methods=['GET', 'POST'], strict_slashes=False)
+
+@app_views.route('/states/<state_id>/cities',
+                 methods=['GET', 'POST'], strict_slashes=False)
 def state_cities(state_id):
-    state  = storage.get(State, state_id)
-    
+    """
+    handles the http verb GET and POST for retrieving and creating
+    of cities for a given state
+    """
+    state = storage.get(State, state_id)
+
     if state:
         if request.method == 'GET':
-            cities = [ city.to_dict() for city in state.cities]
+            cities = [city.to_dict() for city in state.cities]
             return (jsonify(cities))
 
         if request.method == 'POST':
@@ -22,20 +28,26 @@ def state_cities(state_id):
 
             if request.is_json:
                 if 'name' not in data:
-                    return make_response(jsonify({"error":"Missing Name"}), 400)
+                    return make_response(jsonify({"error": "Missing Name"}),
+                                         400)
 
                 data['state_id'] = state_id
                 city = City(**data)
                 city.save()
                 return jsonify(city.to_dict()), 201
             else:
-                return make_response(jsonify({"error":"Not a JSON"}), 400)
+                return make_response(jsonify({"error": "Not a JSON"}), 400)
 
     else:
         abort(404)
 
-@app_views.route('/cities/<city_id>', methods=['GET', 'PUT', 'DELETE'], strict_slashes=False)
+
+@app_views.route('/cities/<city_id>',
+                 methods=['GET', 'PUT', 'DELETE'], strict_slashes=False)
 def cities(city_id):
+    """
+    handles the http verb GET, PUT and DELETE for a given city
+    """
     city = storage.get(City, city_id)
     if city:
         if request.method == 'GET':

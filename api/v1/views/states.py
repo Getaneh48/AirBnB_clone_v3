@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-
+Blue print for state model routes
 """
 from api.v1.views import app_views
 from flask import jsonify, abort, request
@@ -8,7 +8,8 @@ from models import storage
 from models.state import State
 
 
-@app_views.route("/states", methods=['GET', 'POST'], strict_slashes=False)
+@app_views.route("/states",
+                 methods=['GET', 'POST'], strict_slashes=False)
 def states():
     """
     returns all states objects in json format
@@ -18,14 +19,14 @@ def states():
         state_dict = []
         for key, value in all_states.items():
             state_dict.append(value.to_dict())
-    
+
         return (jsonify(state_dict))
 
     if request.method == 'POST':
         if request.is_json:
             data = request.get_json()
             if 'name' not in data:
-                return make_response(jsonify({"error":"Missing Name"}), 400)
+                return jsonify({"error": "Missing Name"}), 400
 
             state = State(**data)
             state.save()
@@ -35,23 +36,28 @@ def states():
 
         return ""
 
+
 @app_views.route("/states/<state_id>", methods=['GET', 'DELETE', 'PUT'])
 def state_by_id(state_id):
+    """
+    handles the http verb GET, DELETE and PUT to retrieve, delete, and
+    modifiy a state
+    """
     if request.method == 'GET':
         try:
             state = storage.get(State, state_id)
             return (jsonify(state.to_dict()))
-        except:
+        except Exception:
             abort(404)
 
     if request.method == 'DELETE':
         state = storage.get(State, state_id)
         if state:
-           state.delete()
-           storage.save()
-           return (jsonify({})), 200
+            state.delete()
+            storage.save()
+            return (jsonify({})), 200
         else:
-           abort(404)
+            abort(404)
 
     if request.method == 'PUT':
         if request.is_json:
@@ -59,7 +65,7 @@ def state_by_id(state_id):
             state = storage.get(State, state_id)
             if state is None:
                 abort(404)
-             
+
             state.name = data['name']
             state.save()
             return jsonify(state.to_dict()), 200

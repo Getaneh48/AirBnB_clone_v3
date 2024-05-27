@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-
+Blueprint for the status route
 """
 from api.v1.views import app_views
 from flask import jsonify
@@ -18,7 +18,7 @@ def status():
 @app_views.route("/stats")
 def count_objects():
     """
-         retrieves the number of each objects by type
+         retrieves the count of each models
     """
     cls_counts = {
         "amenities": storage.count("Amenity"),
